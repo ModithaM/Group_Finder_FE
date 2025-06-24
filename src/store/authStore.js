@@ -5,6 +5,7 @@ export const useAuthStore = create((set) => ({
     token: null,
     user: null,
     isLoggedIn: false,
+    isInitialized: false,
 
     login: (token, user) => {
         localStorage.setItem('token', token);
@@ -22,7 +23,10 @@ export const useAuthStore = create((set) => ({
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
         if (token && user) {
-            set({ token, user, isLoggedIn: true });
+            set({ token, user, isLoggedIn: true, isInitialized: true });
+        }
+        else {
+            set({ isInitialized: true });
         }
     },
 }));

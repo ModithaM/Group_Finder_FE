@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
+import Link from 'next/link';
 
 export default function Header() {
 
@@ -25,7 +26,7 @@ export default function Header() {
     const handleLogout = () => {
         logout();
         setDropdownOpen(false);
-        router.push('/');
+        router.replace('/');
     };
 
     const handleProfile = () => {
@@ -65,15 +66,15 @@ export default function Header() {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <a href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        <Link href="/projects" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
                             Projects
-                        </a>
-                        <a href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        </Link>
+                        <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
                             My Projects
-                        </a>
-                        <a href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        </Link>
+                        <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
                             Contact Us
-                        </a>
+                        </Link>
                     </nav>
 
                     {/* Auth Buttons / User Menu */}
@@ -170,9 +171,9 @@ export default function Header() {
             {mobileMenuOpen && (
                 <div className="md:hidden bg-white border-t border-gray-100">
                     <div className="px-2 pt-2 pb-3 space-y-1">
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Projects</a>
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">My Projects</a>
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Contact Us</a>
+                        <Link href="/projects" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Projects</Link>
+                        <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">My Projects</Link>
+                        <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Contact Us</Link>
 
                         {!isLoggedIn && (
                             <div className="px-3 py-2 border-t border-gray-100 mt-2 pt-2">
