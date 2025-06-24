@@ -1,13 +1,18 @@
 "use client"
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore';
+import { loginUser } from '@/services/authService';
 
 export default function LoginForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const login = useAuthStore((s) => s.login);
+    const router = useRouter();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!username || !password) {
@@ -15,8 +20,21 @@ export default function LoginForm() {
             return;
         }
 
-        console.log("Logging in with:", { username, password });
-        setError("");
+        const result = await loginUser(username, password);
+
+        if (result.success) {
+            console.log(process.env.NEXT_PUBLIC_API_BASE_URL)
+            const { token, user } = result.data;
+            login(token, user);
+            router.push('/');
+        } else {
+            if (result.status === 401) {
+                setError("Invalid username or password!");
+            } else {
+                setError("Error! Try Again");
+                alert(result.message);
+            }
+        }
     };
 
     return (

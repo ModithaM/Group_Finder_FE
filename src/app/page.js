@@ -12,12 +12,13 @@ export default function Home() {
     router.push('/register');
   };
 
-  const stats = [
-    { label: 'Active Students', value: '1,200+' },
-    { label: 'Projects Created', value: '350+' },
-    { label: 'Successful Teams', value: '280+' },
-    { label: 'Technologies', value: '50+' }
-  ];
+  const handleCreateProject = () => {
+    router.push('/create-project');
+  };
+
+  const handleSearchProjects = () => {
+    router.push('/projects');
+  };
 
   const features = [
     {
@@ -87,16 +88,122 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-16 bg-white">
+        {/* Get Started Section - Two Clear Paths */}
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-indigo-600 mb-2">{stat.value}</div>
-                  <div className="text-gray-600 text-sm md:text-base">{stat.label}</div>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Get Started in Two Simple Ways
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Whether you have an amazing project idea or want to contribute your skills to existing projects,
+                we've made it easy for you to get started.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Create Project Path */}
+              <div className="group cursor-pointer" onClick={handleCreateProject}>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 hover:from-green-100 hover:to-emerald-100 transition-all duration-300 border-2 border-transparent hover:border-green-200">
+                  <div className="flex items-start space-x-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">Have a Project Idea?</h3>
+                      <p className="text-gray-600 mb-6">
+                        Transform your innovative concept into reality. Post your project, define requirements,
+                        and connect with skilled teammates who share your vision.
+                      </p>
+                      <ul className="space-y-2 mb-6">
+                        <li className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                          Define your project scope and goals
+                        </li>
+                        <li className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                          Specify required skills and technologies
+                        </li>
+                        <li className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                          Let talented students discover and join you
+                        </li>
+                      </ul>
+                      <div className="flex items-center text-green-600 font-semibold group-hover:text-green-700">
+                        Create Your Project
+                        <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Search Projects Path */}
+              <div className="group cursor-pointer" onClick={handleSearchProjects}>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 border-2 border-transparent hover:border-blue-200">
+                  <div className="flex items-start space-x-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">Looking for a Project?</h3>
+                      <p className="text-gray-600 mb-6">
+                        Explore exciting projects and contribute your expertise. Find opportunities that match
+                        your skills and interests to gain valuable hands-on experience.
+                      </p>
+                      <ul className="space-y-2 mb-6">
+                        <li className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                          Browse projects by technology stack
+                        </li>
+                        <li className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                          Filter by Frontend, Backend, or Full-Stack
+                        </li>
+                        <li className="flex items-center text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                          Apply to join teams with one click
+                        </li>
+                      </ul>
+                      <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700">
+                        Explore Projects
+                        <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="mt-16 text-center">
+              <p className="text-gray-500 mb-6">Join the growing community of SLIIT innovators</p>
+              <div className="flex flex-wrap justify-center gap-8">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">150+</div>
+                  <div className="text-sm text-gray-600">Projects Created</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">200+</div>
+                  <div className="text-sm text-gray-600">Students Joined</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-indigo-600">95%</div>
+                  <div className="text-sm text-gray-600">Success Rate</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
