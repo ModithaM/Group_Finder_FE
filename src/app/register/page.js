@@ -1,5 +1,7 @@
 "use client"
 import { useState } from "react";
+import { registerUser } from '@/services/authService'
+import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
     const [formData, setFormData] = useState({
@@ -12,6 +14,7 @@ export default function RegisterForm() {
     });
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
     const handleChange = (e) => {
         setFormData({
@@ -20,7 +23,7 @@ export default function RegisterForm() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Basic validation
@@ -34,8 +37,17 @@ export default function RegisterForm() {
             return;
         }
 
-        console.log("Signing up with:", formData);
-        setError("");
+        const result = await registerUser(formData.firstName, formData.lastName, formData.username, formData.password, formData.email, formData.specialization);
+        if (result.success) {
+            router.push('/');
+            setError("");
+        } else {
+            if (result.status === 409) {
+                setError("Username already exists!");
+            } else {
+                setError("Network Error! Try Again");
+            }
+        }
     };
 
     return (

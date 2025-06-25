@@ -23,7 +23,6 @@ export default function LoginForm() {
         const result = await loginUser(username, password);
 
         if (result.success) {
-            console.log(process.env.NEXT_PUBLIC_API_BASE_URL)
             const { token, user } = result.data;
             login(token, user);
             router.push('/');
@@ -31,8 +30,7 @@ export default function LoginForm() {
             if (result.status === 401) {
                 setError("Invalid username or password!");
             } else {
-                setError("Error! Try Again");
-                alert(result.message);
+                setError("Network Error! Try Again");
             }
         }
     };
