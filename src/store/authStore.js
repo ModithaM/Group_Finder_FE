@@ -1,7 +1,7 @@
 "use client";
 import { create } from 'zustand';
 
-export const useAuthStore = create((set) => ({
+export const useAuthStore = create((set, get) => ({
     token: null,
     user: null,
     isLoggedIn: false,
@@ -10,7 +10,14 @@ export const useAuthStore = create((set) => ({
     login: (token, user) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        set({ token, user, isLoggedIn: true });
+        set({ token, user, isLoggedIn: true, isInitialized: true });
+    },
+
+    userUpdate: (updatedUserData) => {
+        const currentUser = get().user;
+        const updatedUser = { ...currentUser, ...updatedUserData };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        set({ user: updatedUser });
     },
 
     logout: () => {

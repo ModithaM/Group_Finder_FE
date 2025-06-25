@@ -5,12 +5,15 @@ import { useEffect } from 'react';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useAuthStore } from '@/store/authStore';
+import { updateUser } from '@/services/userService'
+import { ProtectedRoute } from '@/components/protectedRoute'
 import Image from 'next/image'
 
 export default function UserProfile() {
     const [isEditing, setIsEditing] = useState(false);
     const isInitialized = useAuthStore((s) => s.isInitialized);
     const userData = useAuthStore((s) => s.user);
+    const userUpdate = useAuthStore((s) => s.userUpdate);
     const [newSkill, setNewSkill] = useState("");
     const [formData, setFormData] = useState({
         username: "",
@@ -68,8 +71,19 @@ export default function UserProfile() {
         }));
     };
 
-    const handleSave = () => {
-        // Save logic will be implemented later
+    const handleSave = async () => {
+        const response = await updateUser(formData);
+        if (response.success) {
+            userUpdate(response.data);
+        } else {
+            if (response.status === 404) {
+                console.log("404")
+                //setError("Invalid username or password!");
+            } else {
+                console.log(response.status)
+                //setError("Network Error! Try Again");
+            }
+        }
         setIsEditing(false);
     };
 
@@ -93,7 +107,7 @@ export default function UserProfile() {
     };
 
     return (
-        <>
+        <ProtectedRoute requiredRole="MEMBER">
             <Header></Header>
             <div className="min-h-screen">
                 <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -425,6 +439,6 @@ export default function UserProfile() {
                 </div>
             </div>
             <Footer></Footer>
-        </>
+        </ProtectedRoute>
     );
 }
