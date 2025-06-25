@@ -31,7 +31,7 @@ export default function Header() {
 
     const handleProfile = () => {
         setDropdownOpen(false);
-        router.push('/');
+        router.push('/myprofile');
     };
 
     // Close dropdown when clicking outside
@@ -63,10 +63,12 @@ export default function Header() {
                             <span className="ml-3 text-xl font-bold text-gray-900">SLIIT GroupFinder</span>
                         </div>
                     </div>
-
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <Link href="/projects" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        <Link key="home" href="/" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                            Home
+                        </Link>
+                        <Link key="projects" href="/projects" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
                             Projects
                         </Link>
                         <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
