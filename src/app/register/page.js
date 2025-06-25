@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { registerUser } from '@/services/authService'
 import { useRouter } from 'next/navigation';
+import Button from '@/components/button'
 
 export default function RegisterForm() {
     const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function RegisterForm() {
         specialization: "",
         password: "",
     });
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
@@ -37,18 +39,31 @@ export default function RegisterForm() {
             return;
         }
 
-        const result = await registerUser(formData.firstName, formData.lastName, formData.username, formData.password, formData.email, formData.specialization);
-        if (result.success) {
-            router.push('/');
-            setError("");
-        } else {
-            if (result.status === 409) {
-                setError("Username already exists!");
+        setLoading(true);
+        try {
+            const result = await registerUser(
+                formData.firstName,
+                formData.lastName,
+                formData.username,
+                formData.password,
+                formData.email,
+                formData.specialization
+            );
+
+            if (result.success) {
+                setError("");
+                router.push('/');
             } else {
-                setError("Network Error! Try Again");
+                setError(result.status === 409 ? "Username already exists!" : "Network Error! Try Again");
             }
+        } catch (err) {
+            console.error("Unexpected error:", err);
+            setError("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
+
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 p-4">
@@ -223,13 +238,12 @@ export default function RegisterForm() {
                             </a>
                         </label>
                     </div>
-
-                    <button
+                    <Button
                         onClick={handleSubmit}
-                        className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors text-sm font-medium shadow-sm"
-                    >
-                        Create Account
-                    </button>
+                        width="w-full"
+                        text="Create Account"
+                        isLoading={loading}
+                    />
                 </div>
 
                 <div className="mt-4 text-center text-sm">

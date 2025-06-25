@@ -189,19 +189,19 @@ export default function Home() {
 
             {/* Quick Stats */}
             <div className="mt-16 text-center">
-              <p className="text-gray-500 mb-6">Join the growing community of SLIIT innovators</p>
-              <div className="flex flex-wrap justify-center gap-8">
+              <p className="text-gray-500 text-xl mb-6">Join the growing community of SLIIT innovators</p>
+              <div className="flex flex-wrap justify-center gap-12">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">150+</div>
-                  <div className="text-sm text-gray-600">Projects Created</div>
+                  <div className="text-5xl font-bold text-green-600">150+</div>
+                  <div className="text-xl text-gray-600">Projects Created</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">200+</div>
-                  <div className="text-sm text-gray-600">Students Joined</div>
+                  <div className="text-5xl font-bold text-blue-600">200+</div>
+                  <div className="text-xl text-gray-600">Students Joined</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-indigo-600">95%</div>
-                  <div className="text-sm text-gray-600">Success Rate</div>
+                  <div className="text-5xl font-bold text-indigo-600">95%</div>
+                  <div className="text-xl text-gray-600">Success Rate</div>
                 </div>
               </div>
             </div>

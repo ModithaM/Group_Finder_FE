@@ -7,9 +7,13 @@ import Footer from '@/components/footer';
 import { useAuthStore } from '@/store/authStore';
 import { updateUser } from '@/services/userService'
 import { ProtectedRoute } from '@/components/protectedRoute'
+import ErrorMessage from '@/components/ErrorMessage';
+import SuccessMessage from '@/components/successMessage';
 import Image from 'next/image'
 
 export default function UserProfile() {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const isInitialized = useAuthStore((s) => s.isInitialized);
     const userData = useAuthStore((s) => s.user);
@@ -75,13 +79,14 @@ export default function UserProfile() {
         const response = await updateUser(formData);
         if (response.success) {
             userUpdate(response.data);
+            setSuccess('Account updated successfully!');
         } else {
             if (response.status === 404) {
                 console.log("404")
-                //setError("Invalid username or password!");
+                setError("User not found!");
             } else {
                 console.log(response.status)
-                //setError("Network Error! Try Again");
+                setError("Network Error! Try Again");
             }
         }
         setIsEditing(false);
@@ -109,6 +114,16 @@ export default function UserProfile() {
     return (
         <ProtectedRoute requiredRole="MEMBER">
             <Header></Header>
+            <ErrorMessage
+                message={error}
+                onClose={() => setError('')}
+                autoClose={true}
+            />
+            <SuccessMessage
+                message={success}
+                onClose={() => setSuccess('')}
+                autoClose={true}
+            />
             <div className="min-h-screen">
                 <div className="container mx-auto px-4 py-8 max-w-7xl">
                     {/* Profile Header Card */}

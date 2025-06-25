@@ -71,9 +71,11 @@ export default function Header() {
                         <Link key="projects" href="/projects" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
                             Projects
                         </Link>
-                        <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
-                            My Projects
-                        </Link>
+                        {isLoggedIn && (
+                            <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                                My Projects
+                            </Link>
+                        )}
                         <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
                             Contact Us
                         </Link>
@@ -174,7 +176,9 @@ export default function Header() {
                 <div className="md:hidden bg-white border-t border-gray-100">
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         <Link href="/projects" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Projects</Link>
-                        <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">My Projects</Link>
+                        {isLoggedIn && (
+                            <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">My Projects</Link>
+                        )}
                         <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Contact Us</Link>
 
                         {!isLoggedIn && (
