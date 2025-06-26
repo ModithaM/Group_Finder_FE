@@ -249,12 +249,16 @@ export default function UserProfile() {
                                                 <path d="M12 17v4" />
                                             </svg>
                                             {isEditing ? (
-                                                <input
-                                                    type="text"
+                                                <select
                                                     value={formData.specialization}
                                                     onChange={(e) => handleInputChange('specialization', e.target.value)}
                                                     className="bg-transparent border-b border-blue-300 focus:border-blue-600 outline-none transition-colors duration-200"
-                                                />
+                                                >
+                                                    <option value="Software Engineering">Software Engineering</option>
+                                                    <option value="Data Science">Data Science</option>
+                                                    <option value="Cyber Security">Cyber Security</option>
+                                                    <option value="Information Technology">Information Technology</option>
+                                                </select>
                                             ) : (
                                                 <span>{formData.specialization}</span>
                                             )}

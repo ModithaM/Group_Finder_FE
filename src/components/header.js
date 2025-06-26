@@ -65,18 +65,18 @@ export default function Header() {
                     </div>
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <Link key="home" href="/" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        <Link key="home" href="/" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
                             Home
                         </Link>
-                        <Link key="projects" href="/projects" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        <Link key="projects" href="/projects" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
                             Projects
                         </Link>
                         {isLoggedIn && (
-                            <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                            <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
                                 My Projects
                             </Link>
                         )}
-                        <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
                             Contact Us
                         </Link>
                     </nav>
@@ -87,13 +87,13 @@ export default function Header() {
                             <>
                                 <button
                                     onClick={handleLogin}
-                                    className="text-gray-700 hover:text-indigo-600 px-4 py-2 text-sm font-medium transition-colors"
+                                    className="text-gray-700 hover:text-indigo-600 px-4 py-2 text-sm font-semibold transition-colors"
                                 >
                                     Login
                                 </button>
                                 <button
                                     onClick={handleSignUp}
-                                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+                                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors"
                                 >
                                     Sign Up
                                 </button>
@@ -110,7 +110,7 @@ export default function Header() {
                                             {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
                                         </span>
                                     </div>
-                                    <span className="text-gray-700 text-sm">Hello {user?.firstName}</span>
+                                    <span className="text-gray-700 text-sm font-medium">Hello {user?.firstName}</span>
                                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
