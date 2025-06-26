@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { ProtectedRoute } from '@/components/protectedRoute'
 import Header from '@/components/header';

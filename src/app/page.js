@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Header from '@/components/header';
 import Footer from '@/components/footer';
@@ -71,7 +71,7 @@ export default function Home() {
               </h1>
               <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
                 Connect with talented students, discover exciting projects, and build amazing things together.
-                Whether you're looking to join a team or create your own project, we've got you covered.
+                Whether you&#39;re looking to join a team or create your own project, we&#39;ve got you covered.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
@@ -97,7 +97,7 @@ export default function Home() {
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Whether you have an amazing project idea or want to contribute your skills to existing projects,
-                we've made it easy for you to get started.
+                we&#39;ve made it easy for you to get started.
               </p>
             </div>
 

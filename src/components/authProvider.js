@@ -9,7 +9,7 @@ export default function AuthProvider({ children }) {
 
     useEffect(() => {
         initialize();
-    }, []);
+    }, [initialize]);
 
     return <>{children}</>;
 }
