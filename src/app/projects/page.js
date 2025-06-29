@@ -4,13 +4,15 @@ import { ProtectedRoute } from '@/components/protectedRoute'
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ProjectCard from '@/components/projectCard';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { filterProjects } from '@/services/projectService';
+import ErrorMessage from '@/components/ErrorMessage';
 
 export default function Projects() {
     const [projects, setProjects] = useState([]);
     const [isLast, setisLast] = useState(true);
     const [page, setPage] = useState(0);
+    const [error, setError] = useState('');
 
     // Filter states
     const [selectedCourse, setSelectedCourse] = useState('');
@@ -31,14 +33,14 @@ export default function Projects() {
                     }
                     setisLast(result.data.last);
                 } else if (result.status === 400) {
-                    console.error('Bad request. Please check your filter parameters.');
+                    setError(result.message || 'Bad request. Please check your filter parameters.');
                 } else if (result.status === 500) {
-                    console.error('Internal server error. Please try again later.');
+                    setError('Internal server error. Please try again later.');
                 } else {
-                    console.error('Failed to fetch projects:', result.message);
+                    setError('An unexpected error occurred. Please try again later.');
                 }
             } catch (error) {
-                console.error('Error fetching projects:', error);
+                setError('Failed to fetch projects. Please check your network connection or try again later.');
             } finally {
                 // add loader
             }
@@ -72,6 +74,11 @@ export default function Projects() {
     return (
         <ProtectedRoute requiredRole="MEMBER">
             <Header></Header>
+            <ErrorMessage
+                message={error}
+                onClose={() => setError('')}
+                autoClose={true}
+            />
             <div className="min-h-screen">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 

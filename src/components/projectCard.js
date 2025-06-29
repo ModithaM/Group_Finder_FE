@@ -1,5 +1,10 @@
+"use client";
+
+import { useRouter } from 'next/navigation';
 
 export default function ProjectCard({ project }) {
+
+    const router = useRouter();
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -17,13 +22,18 @@ export default function ProjectCard({ project }) {
         return 'text-red-600';
     };
 
+    const viewProject = () => {
+        router.push(`/project/${project.id}`);
+    }
+
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300 hover:border-blue-300 group">
             <div className="p-6">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors cursor-pointer"
+                            onClick={viewProject}>
                             {project.title}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
