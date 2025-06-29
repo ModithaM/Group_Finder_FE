@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-export default function SuccessMessage({ message, onClose, autoClose = true, duration = 4000 }) {
+export default function SuccessMessage({ message, onClose, autoClose = true, duration = 7000 }) {
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {

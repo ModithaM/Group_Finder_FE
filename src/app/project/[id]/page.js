@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { getProjectById, updateProject } from '@/services/projectService';
+import { sendJoinRequest } from '@/services/joinRequestService';
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/protectedRoute'
 import ErrorMessage from '@/components/ErrorMessage';
@@ -32,7 +33,6 @@ export default function Project() {
     });
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-    const [isJoining, setIsJoining] = useState(false);
     const [showJoinModal, setShowJoinModal] = useState(false);
     const [joinMessage, setJoinMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
@@ -76,40 +76,46 @@ export default function Project() {
         }
     };
 
+    //done
     const handleOpenJoinModal = () => {
         setShowJoinModal(true);
         setJoinMessage('I would like to join your project.');
     };
 
+    //done
     const handleCloseJoinModal = () => {
         setShowJoinModal(false);
         setJoinMessage('');
     };
 
+    //done
     const handleSendJoinRequest = async () => {
         if (!joinMessage.trim()) {
-            alert('Please enter a message');
+            setError('Please enter a message before sending the join request.');
             return;
         }
 
         try {
-            setIsJoining(true);
-
             const requestData = {
                 projectId: parseInt(id),
-                userId: 42, // Replace with actual user ID from your auth system
+                userId: currentUser.userId,
                 message: joinMessage.trim(),
                 status: "PENDING"
             };
 
-            // Replace with your actual API endpoint
+            const response = await sendJoinRequest(requestData);
+            if (!response.success) {
+                setError('Error sending join request: ' + response.message);
+                return;
+            }
 
-            alert('Join request sent successfully!');
             handleCloseJoinModal();
+            setSuccess('Join request sent successfully!');
         } catch (err) {
-            alert('Error sending join request: ' + err.message);
+            setError('Error sending join request: ' + (err.message || 'Unknown error'));
         } finally {
-            setIsJoining(false);
+            // add loader
+            setJoinMessage('');
         }
     };
 
@@ -151,6 +157,7 @@ export default function Project() {
         }
     };
 
+    //TODO
     const handleRemoveMember = (memberId) => {
         if (confirm('Are you sure you want to remove this member from the project?')) {
             // API call logic would go here
@@ -575,6 +582,61 @@ export default function Project() {
                                             className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
                                         >
                                             Update Project
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {showJoinModal && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                                <div className="p-6">
+                                    {/* Modal Header */}
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-2xl font-bold text-gray-900">Join Project Request</h2>
+                                        <button
+                                            onClick={handleCloseJoinModal}
+                                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                                        >
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {/* Message */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Message<span className='text-red-600 text-xl'>*</span>
+                                            </label>
+                                            <textarea
+                                                value={joinMessage}
+                                                required
+                                                onChange={(e) => setJoinMessage(e.target.value)}
+                                                rows={6}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                                placeholder="Tell the project owner why you'd like to join this project..."
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Explain your skills, experience, and what you can contribute to the project.</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Modal Actions */}
+                                    <div className="flex gap-3 mt-8">
+                                        <button
+                                            onClick={handleCloseJoinModal}
+                                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleSendJoinRequest}
+                                            className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                                        >
+                                            Send Request
                                         </button>
                                     </div>
                                 </div>

@@ -60,16 +60,7 @@ export const getProjectById = async (id) => {
 
 export const updateProject = async (id, userid, editedProject) => {
     try {
-        const res = await privateAxios.put(`/api/projects/${id}/user/${userid}`, {
-            title: editedProject.title,
-            description: editedProject.description,
-            frontendTechnology: editedProject.frontendTechnology,
-            backendTechnology: editedProject.backendTechnology,
-            maxMembers: editedProject.maxMembers,
-            moduleCode: editedProject.moduleCode,
-            moduleName: editedProject.moduleName,
-            status: editedProject.status
-        });
+        const res = await privateAxios.put(`/api/projects/${id}/user/${userid}`, editedProject);
         return { success: true, data: res.data };
 
     } catch (err) {
