@@ -2,9 +2,9 @@
 
 import { useParams } from 'next/navigation';
 import { getProjectById, updateProject } from '@/services/projectService';
-import { sendJoinRequest } from '@/services/joinRequestService';
+import { sendJoinRequest, getJoinRequests, handleJoinRequest } from '@/services/joinRequestService';
 import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/components/protectedRoute'
+import { ProtectedRoute } from '@/components/protectedRoute';
 import ErrorMessage from '@/components/ErrorMessage';
 import SuccessMessage from '@/components/successMessage';
 import { useAuthStore } from '@/store/authStore';
@@ -16,7 +16,7 @@ export default function Project() {
     const frontendTechs = ['HTML', 'CSS', 'JavaScript', 'React', 'Angular', 'Vue.js'];
     const backendTechs = ['Java', 'Node.js', 'Python', 'Ruby', 'PHP', 'Golang'];
 
-    const params = useParams(); // gets id from the URL
+    const params = useParams();
     const id = params.id;
     const user = useAuthStore((s) => s.user);
 
@@ -47,6 +47,9 @@ export default function Project() {
         maxMembers: 0,
         status: 'OPEN',
     });
+    const [joinRequests, setJoinRequests] = useState([]);
+    const [isRequestLoading, setRequestIsLoading] = useState(false);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     //done
     const currentUser = {
@@ -55,26 +58,25 @@ export default function Project() {
 
     //done
     useEffect(() => {
+        const getProject = async () => {
+            try {
+                const project = await getProjectById(id);
+                if (project.success) {
+                    setProject(project.data);
+                } else {
+                    setError('Error fetching project data: ' + project.message);
+                }
+            } catch (err) {
+                setError('Error fetching project data: ' + (err.message || 'Unknown error'));
+            } finally {
+                // add loader
+            }
+        };
+
         if (id) {
             getProject();
         }
     }, [id]);
-
-    //done. add loader
-    const getProject = async () => {
-        try {
-            const project = await getProjectById(id);
-            if (project.success) {
-                setProject(project.data);
-            } else {
-                setError('Error fetching project data: ' + project.message);
-            }
-        } catch (err) {
-            setError('Error fetching project data: ' + (err.message || 'Unknown error'));
-        } finally {
-            // add loader
-        }
-    };
 
     //done
     const handleOpenJoinModal = () => {
@@ -166,6 +168,7 @@ export default function Project() {
         }
     };
 
+    //TODO
     const handleLeaveProject = () => {
         setShowLeaveModal(true);
     };
@@ -182,7 +185,9 @@ export default function Project() {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         });
     };
 
@@ -209,6 +214,86 @@ export default function Project() {
 
     const isCurrentUserLeader = () => {
         return getCurrentUserRole() === 'LEADER';
+    };
+
+
+    // join requests related functions
+    const loadRequests = async () => {
+        setRequestIsLoading(true);
+        try {
+            const requests = await getJoinRequests(id);
+            if (requests.success) {
+                setJoinRequests(requests.data || []);
+            }
+            setHasLoaded(true);
+        } catch (error) {
+            console.error('Error loading requests:', error);
+        } finally {
+            setRequestIsLoading(false);
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'APPROVED':
+                return 'bg-green-100 text-green-800 border-green-200';
+            case 'REJECTED':
+                return 'bg-red-100 text-red-800 border-red-200';
+            case 'PENDING':
+                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
+
+    const getStatusIcon = (status) => {
+        switch (status) {
+            case 'APPROVED':
+                return (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                );
+            case 'REJECTED':
+                return (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                );
+            case 'PENDING':
+                return (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                );
+            default:
+                return (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                );
+        }
+    };
+
+    const handleApproveReject = async (requestId, status) => {
+        try {
+            const response = await handleJoinRequest(requestId, status);
+            if (response.success) {
+                setSuccess(`Join request ${status.toLowerCase()} successfully!`);
+            } else {
+                setError(`Failed to ${status.toLowerCase()} join request: ${response.message}`);
+            }
+        } catch (error) {
+            setError(`Failed to ${status.toLowerCase()} join request: ${error.message || 'Unknown error'}`);
+        } finally {
+            setJoinRequests(prev =>
+                prev.map(request =>
+                    request.id === requestId
+                        ? { ...request, status: status, respondedAt: new Date().toISOString() }
+                        : request
+                )
+            );
+        }
     };
 
 
@@ -405,6 +490,126 @@ export default function Project() {
                         </div>
                     )}
 
+                    {isCurrentUserLeader() && (
+                        <div className="mx-auto space-y-6">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div className="p-8 text-center border-b border-gray-200">
+                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                        Join Requests
+                                    </h2>
+                                    <p className="text-gray-600 mb-6">
+                                        Manage collaboration requests from interested students
+                                    </p>
+                                    <button
+                                        onClick={loadRequests}
+                                        disabled={isRequestLoading}
+                                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 mx-auto ${isRequestLoading
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                            : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                                            }`}
+                                    >
+                                        <svg className={`w-4 h-4 ${isRequestLoading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        {isRequestLoading ? 'Loading...' : hasLoaded ? 'Refresh Requests' : 'View Requests'}
+                                    </button>
+                                </div>
+
+                                <div className="p-6">
+                                    {hasLoaded && joinRequests.length === 0 ? (
+                                        <div className="text-center py-12">
+                                            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                            </svg>
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Join Requests</h3>
+                                            <p className="text-gray-600">No students have requested to join this project yet.</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {joinRequests.map((request) => (
+                                                <div
+                                                    key={request.id}
+                                                    className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200"
+                                                >
+                                                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                                                        {/* Left: User Info and Message */}
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-3 mb-3">
+                                                                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                                                    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                                    </svg>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 className="font-semibold text-gray-900">
+                                                                        User #{request.userId}
+                                                                    </h4>
+                                                                    <p className="text-sm text-gray-500">
+                                                                        Request #{request.id}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                                                                <p className="text-gray-700 leading-relaxed">
+                                                                    {request.message}
+                                                                </p>
+                                                            </div>
+
+                                                            <div className="flex flex-col sm:flex-row flex-wrap gap-2 text-sm text-gray-500">
+                                                                <div className="flex items-center gap-1">
+                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                    </svg>
+                                                                    <span>Requested: {formatDate(request.createdAt)}</span>
+                                                                </div>
+                                                                {request.respondedAt && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <span>Responded: {formatDate(request.respondedAt)}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Right: Actions and Status */}
+                                                        <div className="flex flex-col sm:flex-row items-end gap-2 sm:gap-3 mt-4 md:mt-0">
+                                                            {request.status === 'PENDING' && (
+                                                                <div className="flex flex-row gap-2 w-full sm:w-auto">
+                                                                    <button
+                                                                        onClick={() => handleApproveReject(request.id, 'APPROVED')}
+                                                                        className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
+                                                                    >
+                                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                        </svg>
+                                                                        Approve
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleApproveReject(request.id, 'REJECTED')}
+                                                                        className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center gap-2 text-sm font-medium"
+                                                                    >
+                                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                        </svg>
+                                                                        Reject
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                            <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(request.status)}`}>
+                                                                {getStatusIcon(request.status)}
+                                                                <span className="capitalize">{request.status.toLowerCase()}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {isUserAlreadyMember() && (
                         <div className="bg-green-50 rounded-xl border border-green-200">
                             <div className="p-8 text-center">
@@ -414,10 +619,10 @@ export default function Project() {
                                     </svg>
                                 </div>
                                 <h2 className="text-2xl font-bold text-green-900 mb-2">
-                                    You're Already a Member!
+                                    You&apos;re Already a Member!
                                 </h2>
                                 <p className="text-green-700">
-                                    You're part of this amazing project team.
+                                    You&apos;re part of this amazing project team.
                                 </p>
                             </div>
                         </div>
@@ -659,7 +864,7 @@ export default function Project() {
                                             Leave Project?
                                         </h2>
                                         <p className="text-gray-600 mb-6">
-                                            Are you sure you want to leave "{project.title}"? This action cannot be undone and you'll need to request to join again.
+                                            Are you sure you want to leave &quot;{project.title}&quot;? This action cannot be undone and you&apos;ll need to request to join again.
                                         </p>
                                         <div className="flex gap-3">
                                             <button
