@@ -72,3 +72,25 @@ export const handleJoinRequest = async (requestId, status) => {
         }
     }
 }
+
+export const leaveProject = async (projectId, memberId) => {
+    try {
+        const res = await privateAxios.delete(`/api/member/${memberId}/leave/${projectId}`);
+        return { success: true, data: res.data };
+    } catch (err) {
+        if (err.response) {
+            return {
+                success: false,
+                status: err.response.status,
+                message: err.response.data?.message || 'Failed to leave project',
+            };
+        } else {
+            // Network error or unknown
+            return {
+                success: false,
+                status: 0,
+                message: 'Network error or unknown error',
+            };
+        }
+    }
+}

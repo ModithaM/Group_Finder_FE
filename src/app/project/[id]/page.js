@@ -2,12 +2,13 @@
 
 import { useParams } from 'next/navigation';
 import { getProjectById, updateProject } from '@/services/projectService';
-import { sendJoinRequest, getJoinRequests, handleJoinRequest } from '@/services/joinRequestService';
+import { sendJoinRequest, getJoinRequests, handleJoinRequest, leaveProject } from '@/services/joinRequestService';
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/protectedRoute';
 import ErrorMessage from '@/components/ErrorMessage';
 import SuccessMessage from '@/components/successMessage';
 import { useAuthStore } from '@/store/authStore';
+import LeaveProjectModal from '@/components/confirmleveModel';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 
@@ -37,6 +38,7 @@ export default function Project() {
     const [joinMessage, setJoinMessage] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [editFormData, setEditFormData] = useState({
         title: '',
         description: '',
@@ -50,6 +52,7 @@ export default function Project() {
     const [joinRequests, setJoinRequests] = useState([]);
     const [isRequestLoading, setRequestIsLoading] = useState(false);
     const [hasLoaded, setHasLoaded] = useState(false);
+    const [removeMemberId, setRemoveMemberId] = useState(null);
 
     //done
     const currentUser = {
@@ -159,24 +162,42 @@ export default function Project() {
         }
     };
 
-    //TODO
-    const handleRemoveMember = (memberId) => {
-        if (confirm('Are you sure you want to remove this member from the project?')) {
-            // API call logic would go here
-            console.log('Removing member:', memberId);
-            alert('Member removed successfully!');
+    //done
+    const handleRemoveMember = async (memberId) => {
+        try {
+            const response = await leaveProject(id, memberId);
+            if (!response.success) {
+                setError('Failed to remove member: ' + response.message);
+                return;
+            }
+            setSuccess('Member removed successfully!');
+        } catch (error) {
+            setError('Failed to remove member: ' + (error.message || 'Unknown error'));
+        } finally {
+            setProject(prevProject => ({
+                ...prevProject,
+                projectMembers: prevProject.projectMembers.filter(member => member.memberId !== memberId)
+            }));
         }
     };
 
-    //TODO
+    const handleleaderRemoveMember = (memberId) => {
+        setShowRemoveModal(true);
+        setRemoveMemberId(memberId);
+    }
+
+    const handleConfirmRemoveMember = () => {
+        handleRemoveMember(removeMemberId);
+        setShowRemoveModal(false);
+        setRemoveMemberId(null);
+    }
+
     const handleLeaveProject = () => {
         setShowLeaveModal(true);
     };
 
     const handleConfirmLeave = () => {
-        // API call logic would go here
-        console.log('Leaving project');
-        alert('You have left the project successfully!');
+        handleRemoveMember(currentUser.userId);
         setShowLeaveModal(false);
     };
 
@@ -451,7 +472,7 @@ export default function Project() {
                                         </div>
                                         {isCurrentUserLeader() && member.role !== 'LEADER' && (
                                             <button
-                                                onClick={() => handleRemoveMember(member.memberId)}
+                                                onClick={() => handleleaderRemoveMember(member.memberId)}
                                                 className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
                                                 title="Remove member"
                                             >
@@ -491,7 +512,7 @@ export default function Project() {
                     )}
 
                     {isCurrentUserLeader() && (
-                        <div className="mx-auto space-y-6">
+                        <div className="mx-auto pb-8 space-y-6">
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                                 <div className="p-8 text-center border-b border-gray-200">
                                     <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -624,6 +645,13 @@ export default function Project() {
                                 <p className="text-green-700">
                                     You&apos;re part of this amazing project team.
                                 </p>
+                                {!isCurrentUserLeader() && (
+                                    <button
+                                        onClick={handleLeaveProject}
+                                        className="mt-6 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors">
+                                        Leave Project
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}
@@ -851,40 +879,25 @@ export default function Project() {
 
                     {/* Leave Project Confirmation Modal */}
                     {showLeaveModal && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-                                <div className="p-6">
-                                    <div className="text-center">
-                                        <div className="text-red-600 mb-4">
-                                            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                                            </svg>
-                                        </div>
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                            Leave Project?
-                                        </h2>
-                                        <p className="text-gray-600 mb-6">
-                                            Are you sure you want to leave &quot;{project.title}&quot;? This action cannot be undone and you&apos;ll need to request to join again.
-                                        </p>
-                                        <div className="flex gap-3">
-                                            <button
-                                                onClick={() => setShowLeaveModal(false)}
-                                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                onClick={handleConfirmLeave}
-                                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
-                                            >
-                                                Leave Project
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <LeaveProjectModal
+                            projectTitle={project.title}
+                            onCancel={() => setShowLeaveModal(false)}
+                            onConfirm={handleConfirmLeave}
+                            header="Leave Project?"
+                            isLeave={true}
+                        ></LeaveProjectModal>
                     )}
+                    {/* Remove Member Confirmation Modal */}
+                    {showRemoveModal && (
+                        <LeaveProjectModal
+                            projectTitle={project.title}
+                            onCancel={() => setShowRemoveModal(false)}
+                            onConfirm={handleConfirmRemoveMember}
+                            header="Remove Member?"
+                            isLeave={false}
+                        ></LeaveProjectModal>
+                    )}
+
                 </div>
             </div>
             <Footer></Footer>
