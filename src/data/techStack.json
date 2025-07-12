@@ -1,0 +1,45 @@
+{
+    "frontend": [
+        "React",
+        "Vuejs",
+        "Angular",
+        "Svelte",
+        "Nextjs",
+        "Tailwind",
+        "Bootstrap",
+        "MaterialUI",
+        "Redux",
+        "TypeScript",
+        "JavaScript",
+        "HTML",
+        "CSS"
+    ],
+    "backend": [
+        "Nodejs",
+        "Expressjs",
+        "Django",
+        "Flask",
+        "SpringBoot",
+        "RubyonRails",
+        "Laravel",
+        "ASPNETCore",
+        "FastAPI",
+        "Go",
+        "Java",
+        "Python",
+        "PHP",
+        "Csharp",
+        "Rest",
+        "WebSockets",
+        "GraphQL",
+        "Kotlin"
+    ],
+    "modules": [
+        "IT2030",
+        "IT2040",
+        "IT2050",
+        "IT2060",
+        "IT2070",
+        "IT2080"
+    ]
+}

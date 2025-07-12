@@ -8,14 +8,15 @@ import { ProtectedRoute } from '@/components/protectedRoute';
 import ErrorMessage from '@/components/ErrorMessage';
 import SuccessMessage from '@/components/successMessage';
 import { useAuthStore } from '@/store/authStore';
+import techStack from '@/data/techStack.json';
 import LeaveProjectModal from '@/components/confirmleveModel';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 
 export default function Project() {
 
-    const frontendTechs = ['HTML', 'CSS', 'JavaScript', 'React', 'Angular', 'Vue.js'];
-    const backendTechs = ['Java', 'Node.js', 'Python', 'Ruby', 'PHP', 'Golang'];
+    const frontendTechs = techStack.frontend;
+    const backendTechs = techStack.backend;
 
     const params = useParams();
     const id = params.id;

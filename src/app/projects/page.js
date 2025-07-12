@@ -7,6 +7,7 @@ import ProjectCard from '@/components/projectCard';
 import { useState, useEffect } from 'react';
 import { filterProjects } from '@/services/projectService';
 import ErrorMessage from '@/components/ErrorMessage';
+import techStack from '@/data/techStack.json';
 
 export default function Projects() {
     const [projects, setProjects] = useState([]);
@@ -56,9 +57,9 @@ export default function Projects() {
 
 
     // Extract unique values for filters
-    const courses = ['IT2030', 'IT2040', 'IT2050', 'IT2060', 'IT2070', 'IT2080'];
-    const frontendTechs = ['HTML', 'CSS', 'JavaScript', 'React', 'Angular', 'Vue.js'];
-    const backendTechs = ['Java', 'Node.js', 'Python', 'Ruby', 'PHP'];
+    const courses = techStack.modules;
+    const frontendTechs = techStack.frontend;
+    const backendTechs = techStack.backend;
 
     // Clear all filters
     const clearFilters = () => {
