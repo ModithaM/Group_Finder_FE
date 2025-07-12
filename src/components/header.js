@@ -72,9 +72,14 @@ export default function Header() {
                             Projects
                         </Link>
                         {isLoggedIn && (
-                            <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
-                                My Projects
-                            </Link>
+                            <>
+                                <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
+                                    My Projects
+                                </Link>
+                                <Link href="/create" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
+                                    Create Project
+                                </Link>
+                            </>
                         )}
                         <Link href="#" className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-semibold transition-colors">
                             Contact Us
@@ -177,7 +182,12 @@ export default function Header() {
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         <Link href="/projects" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Projects</Link>
                         {isLoggedIn && (
-                            <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">My Projects</Link>
+                            <>
+                                <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">My Projects</Link>
+                                <Link href="/create" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">
+                                    Create Project
+                                </Link>
+                            </>
                         )}
                         <Link href="#" className="block px-3 py-2 text-gray-700 hover:text-indigo-600 text-sm font-medium">Contact Us</Link>
 

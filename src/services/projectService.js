@@ -80,3 +80,26 @@ export const updateProject = async (id, userid, editedProject) => {
         }
     }
 };
+
+export const createNewProject = async (projectData) => {
+    try {
+        const res = await privateAxios.post('/api/projects/create', projectData);
+        return { success: true, data: res.data };
+
+    } catch (err) {
+        if (err.response) {
+            return {
+                success: false,
+                status: err.response.status,
+                message: err.response.data?.message || 'Project creation failed',
+            };
+        } else {
+            // Network error or unknown
+            return {
+                success: false,
+                status: 0,
+                message: 'Network error or unknown error',
+            };
+        }
+    }
+}
