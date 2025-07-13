@@ -9,7 +9,6 @@ import { updateUser } from '@/services/userService'
 import { ProtectedRoute } from '@/components/protectedRoute'
 import ErrorMessage from '@/components/ErrorMessage';
 import SuccessMessage from '@/components/successMessage';
-import Image from 'next/image'
 
 export default function UserProfile() {
     const [error, setError] = useState('');

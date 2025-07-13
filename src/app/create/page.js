@@ -101,7 +101,7 @@ export default function createProject() {
     return (
         <ProtectedRoute requiredRole="MEMBER">
             <Header />
-            <main className="flex-1 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+            <main className="flex-1 flex items-center justify-center p-8">
                 <div className="w-full max-w-2xl bg-white shadow-lg rounded-2xl border border-gray-100">
                     <div className="p-8">
                         <div className="mb-8 text-center">

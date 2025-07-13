@@ -44,7 +44,7 @@ export const getProjectById = async (id) => {
             return {
                 success: false,
                 status: err.response.status,
-                message: err.response.data?.message || 'Project filtering failed',
+                message: err.response.data?.error || 'Project filtering failed',
             };
         } else {
             // Network error or unknown
@@ -103,3 +103,26 @@ export const createNewProject = async (projectData) => {
         }
     }
 }
+
+export const deleteProject = async (id, creatorId) => {
+    try {
+        const res = await privateAxios.delete(`/api/projects/${id}/user/${creatorId}`);
+        return { success: true, data: res.data };
+
+    } catch (err) {
+        if (err.response) {
+            return {
+                success: false,
+                status: err.response.status,
+                message: err.response.data?.message || 'Project deletion failed',
+            };
+        } else {
+            // Network error or unknown
+            return {
+                success: false,
+                status: 0,
+                message: 'Network error or unknown error',
+            };
+        }
+    }
+};

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LeaveProjectModal = ({ projectTitle, onCancel, onConfirm, header, isLeave }) => {
+const confirmModel = ({ onCancel, onConfirm, header, message, buttonText }) => {
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
@@ -20,10 +20,7 @@ const LeaveProjectModal = ({ projectTitle, onCancel, onConfirm, header, isLeave 
                             {header}
                         </h2>
                         <p className="text-gray-600 mb-6">
-                            {isLeave === true
-                                ? `Are you sure you want to leave "${projectTitle}"? This action cannot be undone and you'll need to request to join again.`
-                                : 'Are you sure you want to Remove User from Project'
-                            }
+                            {message}
                         </p>
                         <div className="flex gap-3">
                             <button
@@ -36,7 +33,7 @@ const LeaveProjectModal = ({ projectTitle, onCancel, onConfirm, header, isLeave 
                                 onClick={onConfirm}
                                 className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
                             >
-                                {isLeave === true ? 'Leave Project' : 'Remove from Project'}
+                                {buttonText}
                             </button>
                         </div>
                     </div>
@@ -46,4 +43,4 @@ const LeaveProjectModal = ({ projectTitle, onCancel, onConfirm, header, isLeave 
     );
 };
 
-export default LeaveProjectModal;
+export default confirmModel;

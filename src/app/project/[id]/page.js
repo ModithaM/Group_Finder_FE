@@ -1,15 +1,16 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { getProjectById, updateProject } from '@/services/projectService';
+import { getProjectById, updateProject, deleteProject } from '@/services/projectService';
 import { sendJoinRequest, getJoinRequests, handleJoinRequest, leaveProject } from '@/services/joinRequestService';
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/protectedRoute';
 import ErrorMessage from '@/components/ErrorMessage';
 import SuccessMessage from '@/components/successMessage';
 import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'next/navigation';
 import techStack from '@/data/techStack.json';
-import LeaveProjectModal from '@/components/confirmleveModel';
+import LeaveProjectModal from '@/components/confirmModel';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 
@@ -21,6 +22,7 @@ export default function Project() {
     const params = useParams();
     const id = params.id;
     const user = useAuthStore((s) => s.user);
+    const router = useRouter();
 
     const [project, setProject] = useState({
         title: '',
@@ -40,6 +42,7 @@ export default function Project() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showDeleteModel, setShowDeleteModel] = useState(false);
     const [editFormData, setEditFormData] = useState({
         title: '',
         description: '',
@@ -55,12 +58,10 @@ export default function Project() {
     const [hasLoaded, setHasLoaded] = useState(false);
     const [removeMemberId, setRemoveMemberId] = useState(null);
 
-    //done
     const currentUser = {
         userId: user?.id || 0,
     };
 
-    //done
     useEffect(() => {
         const getProject = async () => {
             try {
@@ -68,10 +69,10 @@ export default function Project() {
                 if (project.success) {
                     setProject(project.data);
                 } else {
-                    setError('Error fetching project data: ' + project.message);
+                    setError('Error: ' + project.message);
                 }
             } catch (err) {
-                setError('Error fetching project data: ' + (err.message || 'Unknown error'));
+                setError('Error fetching project: ' + (err.message || 'Unknown error'));
             } finally {
                 // add loader
             }
@@ -82,19 +83,16 @@ export default function Project() {
         }
     }, [id]);
 
-    //done
     const handleOpenJoinModal = () => {
         setShowJoinModal(true);
         setJoinMessage('I would like to join your project.');
     };
 
-    //done
     const handleCloseJoinModal = () => {
         setShowJoinModal(false);
         setJoinMessage('');
     };
 
-    //done
     const handleSendJoinRequest = async () => {
         if (!joinMessage.trim()) {
             setError('Please enter a message before sending the join request.');
@@ -125,7 +123,6 @@ export default function Project() {
         }
     };
 
-    //done
     const handleOpenEditModal = () => {
         setEditFormData({
             title: project.title,
@@ -140,12 +137,6 @@ export default function Project() {
         setShowEditModal(true);
     };
 
-    //done
-    const handleCloseEditModal = () => {
-        setShowEditModal(false);
-    };
-
-    //done
     const handleUpdateProject = async () => {
         try {
             const project = await updateProject(id, currentUser.userId, editFormData);
@@ -159,11 +150,10 @@ export default function Project() {
             setError('Error fetching project data: ' + (err.message || 'Unknown error'));
         } finally {
             // add loader
-            handleCloseEditModal();
+            setShowEditModal(false);
         }
     };
 
-    //done
     const handleRemoveMember = async (memberId) => {
         try {
             const response = await leaveProject(id, memberId);
@@ -182,6 +172,22 @@ export default function Project() {
         }
     };
 
+    const handleDeleteProject = async () => {
+        try {
+            const response = await deleteProject(id, currentUser.userId);
+            if (!response.success) {
+                setError('Failed to delete project: ' + response.message);
+                return;
+            }
+            setSuccess('Project deleted successfully!');
+        } catch (error) {
+            setError('Failed to delete project: ' + (error.message || 'Unknown error'));
+        } finally {
+            setShowDeleteModel(false);
+            router.replace('/projects');
+        }
+    }
+
     const handleleaderRemoveMember = (memberId) => {
         setShowRemoveModal(true);
         setRemoveMemberId(memberId);
@@ -192,10 +198,6 @@ export default function Project() {
         setShowRemoveModal(false);
         setRemoveMemberId(null);
     }
-
-    const handleLeaveProject = () => {
-        setShowLeaveModal(true);
-    };
 
     const handleConfirmLeave = () => {
         handleRemoveMember(currentUser.userId);
@@ -337,7 +339,7 @@ export default function Project() {
                     {/* Project Header */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
                         <div className="p-8">
-                            <div className="flex items-start justify-between mb-6">
+                            <div className="flex items-start justify-between flex-col sm:flex-row mb-6 gap-4 sm:gap-0">
                                 <div className="flex-1">
                                     <h1 className="text-3xl font-bold text-gray-900 mb-3">
                                         {project.title}
@@ -349,17 +351,28 @@ export default function Project() {
                                         <span className="text-base text-gray-600">{project.moduleName}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
                                     {isCurrentUserLeader() && (
-                                        <button
-                                            onClick={handleOpenEditModal}
-                                            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            Edit Project
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={handleOpenEditModal}
+                                                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors w-full sm:w-auto"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                Edit Project
+                                            </button>
+                                            <button
+                                                onClick={() => setShowDeleteModel(true)}
+                                                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors w-full sm:w-auto"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                                Delete Project
+                                            </button>
+                                        </>
                                     )}
                                     <span className={`px-4 py-2 rounded-full text-sm font-medium ${project.status === 'OPEN'
                                         ? 'bg-green-100 text-green-700'
@@ -648,7 +661,7 @@ export default function Project() {
                                 </p>
                                 {!isCurrentUserLeader() && (
                                     <button
-                                        onClick={handleLeaveProject}
+                                        onClick={() => setShowLeaveModal(true)}
                                         className="mt-6 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors">
                                         Leave Project
                                     </button>
@@ -666,7 +679,7 @@ export default function Project() {
                                     <div className="flex items-center justify-between mb-6">
                                         <h2 className="text-2xl font-bold text-gray-900">Edit Project</h2>
                                         <button
-                                            onClick={handleCloseEditModal}
+                                            onClick={() => setShowEditModal(false)}
                                             className="text-gray-400 hover:text-gray-600 transition-colors"
                                         >
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -806,7 +819,7 @@ export default function Project() {
                                     {/* Modal Actions */}
                                     <div className="flex gap-3 mt-8">
                                         <button
-                                            onClick={handleCloseEditModal}
+                                            onClick={() => setShowEditModal(false)}
                                             className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                                         >
                                             Cancel
@@ -881,27 +894,37 @@ export default function Project() {
                     {/* Leave Project Confirmation Modal */}
                     {showLeaveModal && (
                         <LeaveProjectModal
-                            projectTitle={project.title}
                             onCancel={() => setShowLeaveModal(false)}
                             onConfirm={handleConfirmLeave}
                             header="Leave Project?"
-                            isLeave={true}
+                            message="Are you sure you want to leave this project? This action cannot be undone and you'll need to request to join again."
+                            buttonText="Leave Project"
                         ></LeaveProjectModal>
                     )}
                     {/* Remove Member Confirmation Modal */}
                     {showRemoveModal && (
                         <LeaveProjectModal
-                            projectTitle={project.title}
                             onCancel={() => setShowRemoveModal(false)}
                             onConfirm={handleConfirmRemoveMember}
                             header="Remove Member?"
-                            isLeave={false}
+                            message="Are you sure you want to remove this member from the project? This action cannot be undone."
+                            buttonText="Remove Member"
+                        ></LeaveProjectModal>
+                    )}
+
+                    {showDeleteModel && (
+                        <LeaveProjectModal
+                            onCancel={() => setShowDeleteModel(false)}
+                            onConfirm={handleDeleteProject}
+                            header="Delete Project?"
+                            message="Are you sure you want to delete this project? This action cannot be undone and all data will be lost."
+                            buttonText="Delete Project"
                         ></LeaveProjectModal>
                     )}
 
                 </div>
             </div>
             <Footer></Footer>
-        </ProtectedRoute>
+        </ProtectedRoute >
     );
 }

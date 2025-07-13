@@ -13,7 +13,7 @@ export default function Home() {
   };
 
   const handleCreateProject = () => {
-    router.push('/create-project');
+    router.push('/create');
   };
 
   const handleSearchProjects = () => {
@@ -224,7 +224,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Why Choose SLIIT GroupFinder?
+                Why Choose SLIIT ProjectFinder?
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                 Built specifically for SLIIT students to make project collaboration seamless and efficient.
