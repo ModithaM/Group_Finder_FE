@@ -60,18 +60,29 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100">
         {/* Hero Section */}
         <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
+          {/* Background image with overlay */}
+          <div className="absolute inset-0">
+            <img
+              src="/SLIIT.jpg"
+              className="w-full h-full object-cover"
+              alt="Background"
+            />
+            {/* Dark overlay to improve text readability */}
+            <div className="absolute inset-0 bg-black/40"></div>
+          </div>
+
+          <div className="relative max-w-7xl mx-auto">
             <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
                 Find Your Perfect
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">
                   Project Team
                 </span>
                 at SLIIT
               </h1>
-              <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
                 Connect with talented students, discover exciting projects, and build amazing things together.
-                Whether you&#39;re looking to join a team or create your own project, we&#39;ve got you covered.
+                Whether you're looking to join a team or create your own project, we've got you covered.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
@@ -80,7 +91,7 @@ export default function Home() {
                 >
                   Try Now
                 </button>
-                <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-xl text-lg font-semibold hover:bg-indigo-50 transition-colors">
+                <button className="border-2 border-white text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">
                   Learn More
                 </button>
               </div>
